@@ -182,6 +182,7 @@ local function enterKey(key)
         ScreenGui:Destroy()
         api.load_script(); 
         return
+    end
 
     -- You can see a full list of possible status codes and status messages below.
 end
