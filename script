@@ -1,66 +1,511 @@
--- Gui to Lua
--- Version: 3.2
+--[[
+    Universal Roblox Cheat Script with GUI
+    Toggle GUI: Right Control
+    Features:
+    - Fly (Toggle: F)
+    - Noclip (Toggle: N)
+    - Speed (Toggle: V)
+    - Tween to player/position
+]]
 
+local UIS = game:GetService("UserInputService")
+local RS = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local plr = Players.LocalPlayer
 
-local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame")
-local UICorner = Instance.new("UICorner")
-local Title = Instance.new("TextLabel")
-local Close = Instance.new("TextButton")
-local UICornerClose = Instance.new("UICorner")
+-- Cheat variables
+local flyEnabled = false
+local noclipEnabled = false
+local speedEnabled = false
+local flySpeed = 50
+local walkSpeed = 16
+local flyControls = {W = false, S = false, A = false, D = false, Moving = false}
+local flyParts = {}
+local guiVisible = true
 
-ScreenGui.Name = "IPNOE"
-ScreenGui.Parent = game:GetService("CoreGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+-- GUI Creation
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CheatGUI"
+screenGui.Parent = game.CoreGui
 
-Frame.Parent = ScreenGui
-Frame.AnchorPoint = Vector2.new(0.5, 0.5)
-Frame.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
-Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Frame.BorderSizePixel = 0
-Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
-Frame.Size = UDim2.new(0.4, 0, 0.2, 0)
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 250, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
-UICorner.CornerRadius = UDim.new(0.1, 0)
-UICorner.Parent = Frame
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Text = "Universal Cheat Menu"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 14
+title.Parent = mainFrame
 
-Title.Name = "Title"
-Title.Parent = Frame
-Title.AnchorPoint = Vector2.new(0.5, 0.5)
-Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Title.BackgroundTransparency = 1
-Title.BorderSizePixel = 0
-Title.Position = UDim2.new(0.5, 0, 0.5, 0)
-Title.Size = UDim2.new(0.8, 0, 0.5, 0)
-Title.Font = Enum.Font.FredokaOne
-Title.Text = "Skeered HUB Loaded!"
-Title.TextColor3 = Color3.fromRGB(85, 255, 127)
-Title.TextScaled = true
-Title.TextWrapped = true
+-- Fly Section
+local flyFrame = Instance.new("Frame")
+flyFrame.Size = UDim2.new(1, -10, 0, 80)
+flyFrame.Position = UDim2.new(0, 5, 0, 35)
+flyFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+flyFrame.BorderSizePixel = 0
+flyFrame.Parent = mainFrame
 
-Close.Name = "Close"
-Close.Parent = Frame
-Close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-Close.BorderSizePixel = 0
-Close.Position = UDim2.new(0.927, 0, -0.1, 0)
-Close.Size = UDim2.new(0.1, 0, 0.1, 0)
-Close.SizeConstraint = Enum.SizeConstraint.RelativeXX
-Close.Font = Enum.Font.SourceSans
-Close.Text = "X"
-Close.TextColor3 = Color3.fromRGB(255, 255, 255)
-Close.TextScaled = true
-Close.TextWrapped = true
+local flyLabel = Instance.new("TextLabel")
+flyLabel.Size = UDim2.new(1, 0, 0, 20)
+flyLabel.Position = UDim2.new(0, 0, 0, 0)
+flyLabel.BackgroundTransparency = 1
+flyLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyLabel.Text = "Fly (F)"
+flyLabel.Font = Enum.Font.Gotham
+flyLabel.TextSize = 12
+flyLabel.TextXAlignment = Enum.TextXAlignment.Left
+flyLabel.Parent = flyFrame
 
-UICornerClose.CornerRadius = UDim.new(0.1, 0)
-UICornerClose.Parent = Close
+local flyToggle = Instance.new("TextButton")
+flyToggle.Size = UDim2.new(0, 50, 0, 20)
+flyToggle.Position = UDim2.new(1, -50, 0, 0)
+flyToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+flyToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+flyToggle.Text = "OFF"
+flyToggle.Font = Enum.Font.Gotham
+flyToggle.TextSize = 12
+flyToggle.Parent = flyFrame
 
-Close.Activated:Connect(function()
-    ScreenGui:Destroy()
-    if game:GetService("CoreGui"):FindFirstChild("Skeered HUB") then
-        game:GetService("CoreGui"):FindFirstChild("Skeered HUB"):Destroy()
+local flySpeedLabel = Instance.new("TextLabel")
+flySpeedLabel.Size = UDim2.new(0, 80, 0, 20)
+flySpeedLabel.Position = UDim2.new(0, 0, 0, 25)
+flySpeedLabel.BackgroundTransparency = 1
+flySpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+flySpeedLabel.Text = "Speed: "..flySpeed
+flySpeedLabel.Font = Enum.Font.Gotham
+flySpeedLabel.TextSize = 12
+flySpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+flySpeedLabel.Parent = flyFrame
+
+local flySpeedSlider = Instance.new("TextBox")
+flySpeedSlider.Size = UDim2.new(1, -10, 0, 20)
+flySpeedSlider.Position = UDim2.new(0, 5, 0, 45)
+flySpeedSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+flySpeedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+flySpeedSlider.Text = tostring(flySpeed)
+flySpeedSlider.Font = Enum.Font.Gotham
+flySpeedSlider.TextSize = 12
+flySpeedSlider.Parent = flyFrame
+
+-- Noclip Section
+local noclipFrame = Instance.new("Frame")
+noclipFrame.Size = UDim2.new(1, -10, 0, 30)
+noclipFrame.Position = UDim2.new(0, 5, 0, 120)
+noclipFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+noclipFrame.BorderSizePixel = 0
+noclipFrame.Parent = mainFrame
+
+local noclipLabel = Instance.new("TextLabel")
+noclipLabel.Size = UDim2.new(1, 0, 0, 20)
+noclipLabel.Position = UDim2.new(0, 0, 0, 0)
+noclipLabel.BackgroundTransparency = 1
+noclipLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+noclipLabel.Text = "Noclip (N)"
+noclipLabel.Font = Enum.Font.Gotham
+noclipLabel.TextSize = 12
+noclipLabel.TextXAlignment = Enum.TextXAlignment.Left
+noclipLabel.Parent = noclipFrame
+
+local noclipToggle = Instance.new("TextButton")
+noclipToggle.Size = UDim2.new(0, 50, 0, 20)
+noclipToggle.Position = UDim2.new(1, -50, 0, 0)
+noclipToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+noclipToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+noclipToggle.Text = "OFF"
+noclipToggle.Font = Enum.Font.Gotham
+noclipToggle.TextSize = 12
+noclipToggle.Parent = noclipFrame
+
+-- Speed Section
+local speedFrame = Instance.new("Frame")
+speedFrame.Size = UDim2.new(1, -10, 0, 80)
+speedFrame.Position = UDim2.new(0, 5, 0, 155)
+speedFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+speedFrame.BorderSizePixel = 0
+speedFrame.Parent = mainFrame
+
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(1, 0, 0, 20)
+speedLabel.Position = UDim2.new(0, 0, 0, 0)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedLabel.Text = "Speed (V)"
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.TextSize = 12
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = speedFrame
+
+local speedToggle = Instance.new("TextButton")
+speedToggle.Size = UDim2.new(0, 50, 0, 20)
+speedToggle.Position = UDim2.new(1, -50, 0, 0)
+speedToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+speedToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedToggle.Text = "OFF"
+speedToggle.Font = Enum.Font.Gotham
+speedToggle.TextSize = 12
+speedToggle.Parent = speedFrame
+
+local speedValueLabel = Instance.new("TextLabel")
+speedValueLabel.Size = UDim2.new(0, 80, 0, 20)
+speedValueLabel.Position = UDim2.new(0, 0, 0, 25)
+speedValueLabel.BackgroundTransparency = 1
+speedValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedValueLabel.Text = "Speed: "..walkSpeed
+speedValueLabel.Font = Enum.Font.Gotham
+speedValueLabel.TextSize = 12
+speedValueLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedValueLabel.Parent = speedFrame
+
+local speedSlider = Instance.new("TextBox")
+speedSlider.Size = UDim2.new(1, -10, 0, 20)
+speedSlider.Position = UDim2.new(0, 5, 0, 45)
+speedSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+speedSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedSlider.Text = tostring(walkSpeed)
+speedSlider.Font = Enum.Font.Gotham
+speedSlider.TextSize = 12
+speedSlider.Parent = speedFrame
+
+-- Tween Section
+local tweenFrame = Instance.new("Frame")
+tweenFrame.Size = UDim2.new(1, -10, 0, 50)
+tweenFrame.Position = UDim2.new(0, 5, 0, 240)
+tweenFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tweenFrame.BorderSizePixel = 0
+tweenFrame.Parent = mainFrame
+
+local tweenLabel = Instance.new("TextLabel")
+tweenLabel.Size = UDim2.new(1, 0, 0, 20)
+tweenLabel.Position = UDim2.new(0, 0, 0, 0)
+tweenLabel.BackgroundTransparency = 1
+tweenLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+tweenLabel.Text = "Tween to Player"
+tweenLabel.Font = Enum.Font.Gotham
+tweenLabel.TextSize = 12
+tweenLabel.TextXAlignment = Enum.TextXAlignment.Left
+tweenLabel.Parent = tweenFrame
+
+local playerDropdown = Instance.new("TextBox")
+playerDropdown.Size = UDim2.new(0.6, -5, 0, 20)
+playerDropdown.Position = UDim2.new(0, 0, 0, 25)
+playerDropdown.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+playerDropdown.TextColor3 = Color3.fromRGB(255, 255, 255)
+playerDropdown.Text = "PlayerName"
+playerDropdown.Font = Enum.Font.Gotham
+playerDropdown.TextSize = 12
+playerDropdown.PlaceholderText = "Enter player name"
+playerDropdown.Parent = tweenFrame
+
+local tweenButton = Instance.new("TextButton")
+tweenButton.Size = UDim2.new(0.4, -5, 0, 20)
+tweenButton.Position = UDim2.new(0.6, 5, 0, 25)
+tweenButton.BackgroundColor3 = Color3.fromRGB(70, 70, 200)
+tweenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tweenButton.Text = "Tween"
+tweenButton.Font = Enum.Font.Gotham
+tweenButton.TextSize = 12
+tweenButton.Parent = tweenFrame
+
+-- Toggle GUI with Right Control
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.RightControl then
+            guiVisible = not guiVisible
+            mainFrame.Visible = guiVisible
+        elseif input.KeyCode == Enum.KeyCode.F then
+            toggleFly()
+        elseif input.KeyCode == Enum.KeyCode.N then
+            toggleNoclip()
+        elseif input.KeyCode == Enum.KeyCode.V then
+            toggleSpeed()
+        end
     end
 end)
 
-local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
-api.script_id = "25ffeffdd5f9a5c8c965ab0bcb33f231"
-api.load_script()
+-- Fly Functionality
+local function startFly()
+    if not plr.Character or not plr.Character:FindFirstChild("Humanoid") or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
+    
+    flyParts = {
+        bv = Instance.new("BodyVelocity"),
+        bav = Instance.new("BodyAngularVelocity")
+    }
+    
+    flyParts.bv.Velocity = Vector3.new(0, 0, 0)
+    flyParts.bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    flyParts.bv.P = 10000
+    flyParts.bv.Parent = plr.Character.HumanoidRootPart
+    
+    flyParts.bav.AngularVelocity = Vector3.new(0, 0, 0)
+    flyParts.bav.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    flyParts.bav.P = 10000
+    flyParts.bav.Parent = plr.Character.HumanoidRootPart
+    
+    plr.Character.Humanoid.PlatformStand = true
+end
+
+local function endFly()
+    if not plr.Character then return end
+    
+    if flyParts.bv then flyParts.bv:Destroy() end
+    if flyParts.bav then flyParts.bav:Destroy() end
+    
+    if plr.Character:FindFirstChild("Humanoid") then
+        plr.Character.Humanoid.PlatformStand = false
+    end
+end
+
+local function updateFly()
+    if not flyEnabled or not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local cam = workspace.CurrentCamera
+    local hrp = plr.Character.HumanoidRootPart
+    
+    if flyControls.Moving then
+        local moveDirection = Vector3.new(0, 0, 0)
+        
+        if flyControls.W then moveDirection = moveDirection + cam.CFrame.LookVector end
+        if flyControls.S then moveDirection = moveDirection - cam.CFrame.LookVector end
+        if flyControls.A then moveDirection = moveDirection - cam.CFrame.RightVector end
+        if flyControls.D then moveDirection = moveDirection + cam.CFrame.RightVector end
+        
+        if moveDirection.Magnitude > 0 then
+            moveDirection = moveDirection.Unit * flySpeed
+        end
+        
+        flyParts.bv.Velocity = moveDirection
+    else
+        flyParts.bv.Velocity = Vector3.new(0, 0, 0)
+    end
+end
+
+-- Noclip Functionality
+local noclipConnection
+local function startNoclip()
+    noclipConnection = RS.Stepped:Connect(function()
+        if noclipEnabled and plr.Character then
+            for _, v in pairs(plr.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+local function endNoclip()
+    if noclipConnection then
+        noclipConnection:Disconnect()
+    end
+end
+
+-- Speed Functionality
+local speedConnection
+local function startSpeed()
+    speedConnection = RS.Heartbeat:Connect(function()
+        if speedEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = plr.Character.HumanoidRootPart
+            local cam = workspace.CurrentCamera
+            local moveDirection = Vector3.new(0, 0, 0)
+            
+            local W, A, S, D = false, false, false, false
+            for _, v in pairs(UIS:GetKeysPressed()) do
+                if v.KeyCode == Enum.KeyCode.W then W = true end
+                if v.KeyCode == Enum.KeyCode.A then A = true end
+                if v.KeyCode == Enum.KeyCode.S then S = true end
+                if v.KeyCode == Enum.KeyCode.D then D = true end
+            end
+            
+            if W then moveDirection = moveDirection + cam.CFrame.LookVector end
+            if S then moveDirection = moveDirection - cam.CFrame.LookVector end
+            if A then moveDirection = moveDirection - cam.CFrame.RightVector end
+            if D then moveDirection = moveDirection + cam.CFrame.RightVector end
+            
+            if moveDirection.Magnitude > 0 then
+                moveDirection = moveDirection.Unit * walkSpeed
+            end
+            
+            hrp.Velocity = Vector3.new(moveDirection.X, hrp.Velocity.Y, moveDirection.Z)
+        end
+    end)
+end
+
+local function endSpeed()
+    if speedConnection then
+        speedConnection:Disconnect()
+    end
+    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        plr.Character.HumanoidRootPart.Velocity = Vector3.new(0, 0, 0)
+    end
+end
+
+-- Tween Functionality
+local activeTween
+local function tweenToPlayer(playerName)
+    local targetPlayer
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(playerName) or string.lower(player.DisplayName) == string.lower(playerName) then
+            targetPlayer = player
+            break
+        end
+    end
+    
+    if not targetPlayer or not targetPlayer.Character or not targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        return false, "Player not found"
+    end
+    
+    if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
+        return false, "Your character not found"
+    end
+    
+    local targetPos = targetPlayer.Character.HumanoidRootPart.Position
+    local startPos = plr.Character.HumanoidRootPart.Position
+    local distance = (targetPos - startPos).Magnitude
+    local duration = distance / 100 -- Adjust speed as needed
+    
+    if activeTween then
+        activeTween:Cancel()
+    end
+    
+    activeTween = TweenService:Create(
+        plr.Character.HumanoidRootPart,
+        TweenInfo.new(duration, Enum.EasingStyle.Linear),
+        {CFrame = CFrame.new(targetPos + Vector3.new(0, 3, 0))}
+    )
+    
+    activeTween:Play()
+    
+    activeTween.Completed:Connect(function()
+        activeTween = nil
+    end)
+    
+    return true
+end
+
+-- Toggle Functions
+local function toggleFly()
+    flyEnabled = not flyEnabled
+    if flyEnabled then
+        startFly()
+        flyToggle.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        flyToggle.Text = "ON"
+    else
+        endFly()
+        flyToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        flyToggle.Text = "OFF"
+    end
+end
+
+local function toggleNoclip()
+    noclipEnabled = not noclipEnabled
+    if noclipEnabled then
+        startNoclip()
+        noclipToggle.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        noclipToggle.Text = "ON"
+    else
+        endNoclip()
+        noclipToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        noclipToggle.Text = "OFF"
+    end
+end
+
+local function toggleSpeed()
+    speedEnabled = not speedEnabled
+    if speedEnabled then
+        startSpeed()
+        speedToggle.BackgroundColor3 = Color3.fromRGB(50, 255, 50)
+        speedToggle.Text = "ON"
+    else
+        endSpeed()
+        speedToggle.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        speedToggle.Text = "OFF"
+    end
+end
+
+-- GUI Events
+flyToggle.MouseButton1Click:Connect(toggleFly)
+noclipToggle.MouseButton1Click:Connect(toggleNoclip)
+speedToggle.MouseButton1Click:Connect(toggleSpeed)
+
+flySpeedSlider.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local newSpeed = tonumber(flySpeedSlider.Text)
+        if newSpeed and newSpeed > 0 then
+            flySpeed = newSpeed
+            flySpeedLabel.Text = "Speed: "..flySpeed
+        else
+            flySpeedSlider.Text = tostring(flySpeed)
+        end
+    end
+end)
+
+speedSlider.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local newSpeed = tonumber(speedSlider.Text)
+        if newSpeed and newSpeed > 0 then
+            walkSpeed = newSpeed
+            speedValueLabel.Text = "Speed: "..walkSpeed
+        else
+            speedSlider.Text = tostring(walkSpeed)
+        end
+    end
+end)
+
+tweenButton.MouseButton1Click:Connect(function()
+    tweenToPlayer(playerDropdown.Text)
+end)
+
+-- Input Handling for Fly
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and flyEnabled then
+        if input.KeyCode == Enum.KeyCode.W then flyControls.W = true end
+        if input.KeyCode == Enum.KeyCode.S then flyControls.S = true end
+        if input.KeyCode == Enum.KeyCode.A then flyControls.A = true end
+        if input.KeyCode == Enum.KeyCode.D then flyControls.D = true end
+        
+        flyControls.Moving = flyControls.W or flyControls.S or flyControls.A or flyControls.D
+    end
+end)
+
+UIS.InputEnded:Connect(function(input, gameProcessed)
+    if not gameProcessed and flyEnabled then
+        if input.KeyCode == Enum.KeyCode.W then flyControls.W = false end
+        if input.KeyCode == Enum.KeyCode.S then flyControls.S = false end
+        if input.KeyCode == Enum.KeyCode.A then flyControls.A = false end
+        if input.KeyCode == Enum.KeyCode.D then flyControls.D = false end
+        
+        flyControls.Moving = flyControls.W or flyControls.S or flyControls.A or flyControls.D
+    end
+end)
+
+-- Main Loop
+RS.Heartbeat:Connect(function()
+    if flyEnabled then
+        updateFly()
+    end
+end)
+
+-- Cleanup
+plr.CharacterAdded:Connect(function(character)
+    if flyEnabled then
+        task.wait(1) -- Wait for character to fully load
+        startFly()
+    end
+end)
+
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Cheat Loaded",
+    Text = "Press Right Control to toggle GUI\nF: Fly | N: Noclip | V: Speed",
+    Duration = 5
+})
