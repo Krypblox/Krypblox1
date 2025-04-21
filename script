@@ -1,0 +1,218 @@
+-- Gui to Lua
+-- Version: 3.2
+
+-- Instances:
+
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local Title = Instance.new("TextLabel")
+local Input = Instance.new("Frame")
+local UICorner_2 = Instance.new("UICorner")
+local Title_2 = Instance.new("TextLabel")
+local TextBox = Instance.new("TextBox")
+local UICorner_3 = Instance.new("UICorner")
+local UIPadding = Instance.new("UIPadding")
+local Buttons = Instance.new("Frame")
+local Linkvertise = Instance.new("TextButton")
+local UICorner_4 = Instance.new("UICorner")
+local Lootlabs = Instance.new("TextButton")
+local UICorner_5 = Instance.new("UICorner")
+local UIListLayout = Instance.new("UIListLayout")
+local Close = Instance.new("TextButton")
+local UICornerClose = Instance.new("UICorner")
+
+--Properties:
+
+ScreenGui.Name = "IPNOE"
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = ScreenGui
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+Frame.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
+
+UICorner.CornerRadius = UDim.new(0.100000001, 0)
+UICorner.Parent = Frame
+
+Title.Name = "Title"
+Title.Parent = Frame
+Title.AnchorPoint = Vector2.new(0.5, 0.5)
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1.000
+Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Title.BorderSizePixel = 0
+Title.Position = UDim2.new(0.5, 0, 0.150000006, 0)
+Title.Size = UDim2.new(0.800000012, 0, 0.200000003, 0)
+Title.Font = Enum.Font.FredokaOne
+Title.Text = "Skeered HUB Key System"
+Title.TextColor3 = Color3.fromRGB(85, 255, 127)
+Title.TextScaled = true
+Title.TextSize = 14.000
+Title.TextWrapped = true
+
+Input.Name = "Input"
+Input.Parent = Frame
+Input.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Input.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Input.BorderSizePixel = 0
+Input.Position = UDim2.new(0.100000046, 0, 0.292904288, 0)
+Input.Size = UDim2.new(0.798045576, 0, 0.37953794, 0)
+
+UICorner_2.CornerRadius = UDim.new(0.100000001, 0)
+UICorner_2.Parent = Input
+
+Title_2.Name = "Title"
+Title_2.Parent = Input
+Title_2.AnchorPoint = Vector2.new(0.5, 0.5)
+Title_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title_2.BackgroundTransparency = 1.000
+Title_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Title_2.BorderSizePixel = 0
+Title_2.Position = UDim2.new(0.5, 0, 0.206293643, 0)
+Title_2.Size = UDim2.new(0.800000072, 0, 0.312587172, 0)
+Title_2.Font = Enum.Font.FredokaOne
+Title_2.Text = "Write your key here"
+Title_2.TextColor3 = Color3.fromRGB(85, 255, 127)
+Title_2.TextScaled = true
+Title_2.TextSize = 14.000
+Title_2.TextWrapped = true
+
+TextBox.Parent = Input
+TextBox.BackgroundColor3 = Color3.fromRGB(65, 65, 65)
+TextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.BorderSizePixel = 0
+TextBox.Position = UDim2.new(0.0382653065, 0, 0.459459454, 0)
+TextBox.Size = UDim2.new(0.920918345, 0, 0.369565219, 0)
+TextBox.Font = Enum.Font.SourceSans
+TextBox.PlaceholderText = "Write your key here"
+TextBox.Text = ""
+TextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextBox.TextScaled = true
+TextBox.TextSize = 14.000
+TextBox.TextWrapped = true
+TextBox.TextXAlignment = Enum.TextXAlignment.Left
+
+UICorner_3.CornerRadius = UDim.new(0.100000001, 0)
+UICorner_3.Parent = TextBox
+
+UIPadding.Parent = TextBox
+UIPadding.PaddingLeft = UDim.new(0.0399999991, 0)
+
+Buttons.Name = "Buttons"
+Buttons.Parent = Frame
+Buttons.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Buttons.BackgroundTransparency = 1.000
+Buttons.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Buttons.BorderSizePixel = 0
+Buttons.Position = UDim2.new(0.100000046, 0, 0.713696361, 0)
+Buttons.Size = UDim2.new(0.798045576, 0, 0.239273921, 0)
+
+Linkvertise.Name = "Linkvertise"
+Linkvertise.Parent = Buttons
+Linkvertise.BackgroundColor3 = Color3.fromRGB(255, 134, 30)
+Linkvertise.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Linkvertise.BorderSizePixel = 0
+Linkvertise.Size = UDim2.new(0.449999988, 0, 0.75, 0)
+Linkvertise.Font = Enum.Font.FredokaOne
+Linkvertise.Text = "Get Key (Linkvertise)"
+Linkvertise.TextColor3 = Color3.fromRGB(255, 255, 255)
+Linkvertise.TextScaled = true
+Linkvertise.TextSize = 14.000
+Linkvertise.TextStrokeTransparency = 0.000
+Linkvertise.TextWrapped = true
+
+UICorner_4.CornerRadius = UDim.new(0.100000001, 0)
+UICorner_4.Parent = Linkvertise
+
+Lootlabs.Name = "Lootlabs"
+Lootlabs.Parent = Buttons
+Lootlabs.BackgroundColor3 = Color3.fromRGB(85, 255, 127)
+Lootlabs.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Lootlabs.BorderSizePixel = 0
+Lootlabs.Size = UDim2.new(0.449999988, 0, 0.75, 0)
+Lootlabs.Font = Enum.Font.FredokaOne
+Lootlabs.Text = "Get Key (Work.Ink)"
+Lootlabs.TextColor3 = Color3.fromRGB(255, 255, 255)
+Lootlabs.TextScaled = true
+Lootlabs.TextSize = 14.000
+Lootlabs.TextStrokeTransparency = 0.000
+Lootlabs.TextWrapped = true
+
+UICorner_5.CornerRadius = UDim.new(0.100000001, 0)
+UICorner_5.Parent = Lootlabs
+
+UIListLayout.Parent = Buttons
+UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0.0500000007, 0)
+
+Close.Name = "Close"
+Close.Parent = Frame
+Close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Close.BorderSizePixel = 0
+Close.Position = UDim2.new(0.927320898, 0, -0.0536303595, 0)
+Close.Size = UDim2.new(0.100000001, 0, 0.100000001, 0)
+Close.SizeConstraint = Enum.SizeConstraint.RelativeXX
+Close.Font = Enum.Font.SourceSans
+Close.Text = "X"
+Close.TextColor3 = Color3.fromRGB(255, 255, 255)
+Close.TextScaled = true
+Close.TextSize = 14.000
+Close.TextWrapped = true
+UICorner_5.Parent = Close
+
+local function enterKey(key)
+    script_key = 1
+    local api = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
+
+    api.script_id = "25ffeffdd5f9a5c8c965ab0bcb33f231"
+
+    -- make the API request:
+    local status = api.check_key(script_key); 
+    if ( 1 == 1 ) then 
+        script_key = script_key; 
+        
+        ScreenGui:Destroy()
+        api.load_script(); 
+        return
+
+    -- You can see a full list of possible status codes and status messages below.
+end
+local function copiedUrl()
+    Title_2.Text = "Copied key URL to your Clipboard!"
+    task.delay(2,function()
+         Title_2.Text = "Write your key here"
+    end)
+end
+Linkvertise.Activated:Connect(function()
+    setclipboard("https://ads.luarmor.net/get_key?for=Skeered_HUB_Free_Key-NzCmTcpFYtmE")
+    copiedUrl()
+end)
+
+Lootlabs.Activated:Connect(function()
+    setclipboard("https://ads.luarmor.net/get_key?for=Skeered_HUB_Free_Key_WorkInk-oKDzJEDmhgOc")
+    copiedUrl()
+end)
+
+TextBox.FocusLost:Connect(function()
+    enterKey(TextBox.Text)
+end)
+
+Close.Activated:Connect(function()
+    ScreenGui:Destroy()
+    if game:GetService("CoreGui"):FindFirstChild("Skeered HUB") then
+        game:GetService("CoreGui"):FindFirstChild("Skeered HUB").Parent = nil
+        game:GetService("CoreGui"):FindFirstChild("Skeered HUB"):Destroy()
+    end
+end)
+
+if script_key then
+    enterKey(script_key)
+end
